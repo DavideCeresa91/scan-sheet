@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1746d1">
+  <meta name="description" content="Scansiona codici a barre e registra quantità e operatore nel tuo foglio Google.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="./style.css">
+  <title>Scan Sheet</title>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="./"><img src="./icons/icon.svg" alt="" width="38" height="38"><span>Scan Sheet<small>Registro scansioni</small></span></a>
+    <div class="header-actions"><button id="install" class="quiet" hidden>Installa</button><button id="settings-open" class="quiet" aria-haspopup="dialog">Impostazioni</button></div>
+  </header>
+
+  <main class="layout">
+    <section class="work-panel" aria-labelledby="form-title">
+      <div class="panel-heading"><div><span class="eyebrow">SCANSIONE</span><h1 id="form-title">Nuova registrazione</h1></div><span id="network" class="pill">Online</span></div>
+      <div class="operator-line"><span>Operatore</span><strong id="operator-label">Da impostare</strong></div>
+      <div id="setup-notice" class="notice"><strong>Collega Google Sheets</strong><p>Apri Impostazioni per inserire il tuo nome e il collegamento al registro.</p></div>
+      <div id="boot-error" class="notice error" hidden></div>
+      <noscript><p class="notice error">Attiva JavaScript per usare lo scanner.</p></noscript>
+
+      <button id="scan" class="scan-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5M7 7v10M10 7v10M14 7v10M17 7v10"/></svg><span>Scansiona codice</span></button>
+      <div id="camera-panel" class="camera-panel" hidden>
+        <video id="video" muted playsinline aria-label="Anteprima fotocamera"></video>
+        <div class="scan-guide" aria-hidden="true"></div>
+        <div class="camera-tools"><button id="torch" class="camera-button" hidden>Torcia</button><button id="stop-scan" class="camera-button">Chiudi fotocamera</button></div>
+      </div>
+      <p id="camera-message" class="helper" aria-live="polite">Inquadra l’etichetta oppure inserisci il codice qui sotto.</p>
+
+      <form id="record-form">
+        <label for="barcode">Codice a barre</label>
+        <input id="barcode" name="barcode" class="barcode-input" type="text" maxlength="512" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Es. 000123456789" required>
+        <div class="quantity-row"><label for="quantity">Quantità</label><div class="stepper"><button id="minus" type="button" aria-label="Diminuisci quantità">−</button><input id="quantity" name="quantity" type="number" inputmode="decimal" min="0" max="1000000000" step="any" value="1" required><button id="plus" type="button" aria-label="Aumenta quantità">+</button></div></div>
+        <p class="helper time-note">Data e ora vengono registrate automaticamente.</p>
+        <button id="submit-record" class="primary full" type="submit" disabled>Registra</button>
+      </form>
+      <div id="feedback" class="feedback" role="status" aria-live="polite" hidden></div>
+    </section>
+
+    <aside class="activity-panel" aria-labelledby="activity-title">
+      <div class="panel-heading"><div><span class="eyebrow">QUESTO DISPOSITIVO</span><h2 id="activity-title">Registro recente</h2></div><span id="pending-count" class="counter">0 da inviare</span></div>
+      <div class="destination"><span>Destinazione</span><strong id="destination-label">Da configurare</strong></div>
+      <div id="sync-message" class="sync-message" role="status" aria-live="polite">Le registrazioni compariranno qui.</div>
+      <button id="sync-now" type="button" class="secondary full" disabled>Invia registrazioni in attesa</button>
+      <ol id="records" class="records" aria-label="Ultime dieci registrazioni"></ol>
+      <div id="empty-state" class="empty-state"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 8v16M9 8v16M15 8v16M19 8v16M25 8v16M28 8v16"/></svg><p>Pronto per la prima scansione.</p></div>
+      <button id="export" class="quiet export" type="button" disabled>Esporta registro locale (.csv)</button>
+      <p class="local-note">“Salvato” appare solo dopo la conferma di Google Sheets. Senza rete, i dati restano in attesa su questo dispositivo.</p>
+    </aside>
+  </main>
+
+  <dialog id="settings-dialog" aria-labelledby="settings-title">
+    <form id="settings-form">
+      <div class="dialog-heading"><h2 id="settings-title">Impostazioni</h2><button id="settings-close" type="button" class="quiet" aria-label="Chiudi impostazioni">Chiudi</button></div>
+      <label for="operator">Nome operatore</label><input id="operator" maxlength="80" autocomplete="name" placeholder="Nome e cognome" required>
+      <label for="endpoint">Collegamento Google</label><input id="endpoint" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec" required>
+      <p class="helper">L’indirizzo della web app creato seguendo la guida inclusa.</p>
+      <label for="access-key">Chiave di accesso</label><input id="access-key" type="password" autocomplete="off" minlength="32" maxlength="256" required>
+      <p class="helper">Nome, collegamento e chiave rimangono salvati su questo dispositivo.</p>
+      <div id="settings-result" class="feedback" role="status" hidden></div>
+      <div class="dialog-actions"><button id="test-connection" class="secondary" type="button">Verifica collegamento</button><button class="primary" type="submit">Salva impostazioni</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="install-dialog" aria-labelledby="install-title"><h2 id="install-title">Aggiungi alla Home</h2><p>Su iPhone: apri questa pagina in Safari, tocca Condividi e poi “Aggiungi alla schermata Home”. Su Android: apri il menu del browser e scegli “Installa app” o “Aggiungi a schermata Home”.</p><form method="dialog"><button class="primary full">Ho capito</button></form></dialog>
+  <footer>Scan Sheet <span>v1.0</span><button id="install-help" class="quiet" type="button">Aggiungi alla Home</button></footer>
+  <script src="./vendor/zxing-browser-0.2.1.min.js" defer></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

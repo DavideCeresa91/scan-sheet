@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "Scan Sheet",
+  "short_name": "Scan Sheet",
+  "description": "Codici a barre, quantità e operatore nel tuo foglio Google.",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f0f3f9",
+  "theme_color": "#1746d1",
+  "icons": [
+    {"src":"./icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"./icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"./icons/maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ]
+}
